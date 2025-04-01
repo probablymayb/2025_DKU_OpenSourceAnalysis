@@ -42,6 +42,8 @@ class SkipList {
     std::vector<Key> Scan(const Key& key, const int scan_num); // Range query function (to be implemented by students)
     bool Delete(const Key& key) const; // Delete function (to be implemented by students)
 
+    void Print() const;
+
    private:
     int RandomLevel(); // Generates a random level for new nodes (to be implemented by students)
 
@@ -99,4 +101,18 @@ template<typename Key>
 std::vector<Key> SkipList<Key>::Scan(const Key& key, const int scan_num) {
     // To be implemented by students
     return {};
+}
+
+template<typename Key>
+void SkipList<Key>::Print() const {
+  std::cout << "SkipList Structure:\n";
+  for (int level = max_level - 1; level >= 0; --level) {
+    Node* node = head->next[level];
+    std::cout << "Level " << level << ": ";
+    while (node != nullptr) {
+      std::cout << node->key << " ";
+      node = node->next[level];
+    }
+    std::cout << "\n";
+  }
 }
