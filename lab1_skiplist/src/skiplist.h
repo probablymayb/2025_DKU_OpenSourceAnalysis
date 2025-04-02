@@ -62,45 +62,141 @@ struct SkipList<Key>::Node {
     Node(Key key, int level);
 };
 
+template<typename Key>
+SkipList<Key>::Node::Node(Key key, int level) : key(key) {
+    // Initialize the next pointers for each level
+    next.resize(level, nullptr);
+}
+
 // Generate a random level for new nodes
 template<typename Key>
 int SkipList<Key>::RandomLevel() {
-    // To be implemented by students
-    return 1; // Default return value (students should modify this)
+    int level = 1;
+    // Increase level with probability 'probability'
+    while ((static_cast<float>(rand()) / RAND_MAX) < probability && level < max_level) {
+        level++;
+    }
+    return level;
 }
 
 // Constructor for SkipList
 template<typename Key>
 SkipList<Key>::SkipList(int max_level, float probability)
     : max_level(max_level), probability(probability) {
-    // To be implemented by students
+    // Initialize random seed
+    srand(time(nullptr));
+
+    // Create head node with maximum level
+    head = new Node(Key(), max_level);
 }
 
 // Insert function (inserts a key into SkipList)
 template<typename Key>
 void SkipList<Key>::Insert(const Key& key) {
-    // To be implemented by students
+    // Array to store the update positions at each level
+    std::vector<Node*> update(max_level, nullptr);
+    Node* current = head;
+
+    // Find the position to insert at each level
+    for (int i = max_level - 1; i >= 0; i--) {
+        while (current->next[i] != nullptr && compare_(current->next[i]->key, key) < 0) {
+            current = current->next[i];
+        }
+        update[i] = current;
+    }
+
+    // Generate a random level for the new node
+    int new_level = RandomLevel();
+
+    // Create new node
+    Node* new_node = new Node(key, new_level);
+
+    // Update the next pointers for each level
+    for (int i = 0; i < new_level; i++) {
+        new_node->next[i] = update[i]->next[i];
+        update[i]->next[i] = new_node;
+    }
 }
 
 // Delete function (removes a key from SkipList)
 template<typename Key>
 bool SkipList<Key>::Delete(const Key& key) const {
-    // To be implemented by students
-    return false;
+    // Array to store the update positions at each level
+    std::vector<Node*> update(max_level, nullptr);
+    Node* current = head;
+
+    // Find the position to delete at each level
+    for (int i = max_level - 1; i >= 0; i--) {
+        while (current->next[i] != nullptr && compare_(current->next[i]->key, key) < 0) {
+            current = current->next[i];
+        }
+        update[i] = current;
+    }
+
+    // Move to the node to be deleted
+    current = current->next[0];
+
+    // If the key is not found, return false
+    if (current == nullptr || compare_(current->key, key) != 0) {
+        return false;
+    }
+
+    // Update the next pointers to bypass the deleted node
+    for (int i = 0; i < max_level; i++) {
+        if (update[i]->next[i] != current) {
+            break;
+        }
+        update[i]->next[i] = current->next[i];
+    }
+
+    // Delete the node
+    delete current;
+
+    return true;
 }
 
 // Lookup function (checks if a key exists in SkipList)
 template<typename Key>
 bool SkipList<Key>::Contains(const Key& key) const {
-    // To be implemented by students
-    return false;
+    Node* current = head;
+
+    // Start from the highest level and move down
+    for (int i = max_level - 1; i >= 0; i--) {
+        while (current->next[i] != nullptr && compare_(current->next[i]->key, key) < 0) {
+            current = current->next[i];
+        }
+    }
+
+    // Move to the lowest level
+    current = current->next[0];
+
+    // Check if the key is found
+    return (current != nullptr && compare_(current->key, key) == 0);
 }
 
 // Range query function (retrieves scan_num keys starting from key)
 template<typename Key>
 std::vector<Key> SkipList<Key>::Scan(const Key& key, const int scan_num) {
-    // To be implemented by students
-    return {};
+    std::vector<Key> result;
+    Node* current = head;
+
+    // Find the starting position
+    for (int i = max_level - 1; i >= 0; i--) {
+        while (current->next[i] != nullptr && compare_(current->next[i]->key, key) < 0) {
+            current = current->next[i];
+        }
+    }
+
+    // Move to the first node that is >= key
+    current = current->next[0];
+
+    // Collect scan_num keys
+    for (int i = 0; i < scan_num && current != nullptr; i++) {
+        result.push_back(current->key);
+        current = current->next[0];
+    }
+
+    return result;
 }
 
 template<typename Key>
