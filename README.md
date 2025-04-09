@@ -23,3 +23,13 @@ If you want to proceed to Lab1, go to command below :
 
     ./lab1_skiplist
 
+
+## Lab2
+If you want to proceed to Lab2, go to command below :
+
+    cd lab2_bplustree
+
+    make
+
+    ./lab2_bplustree
+
