@@ -201,14 +201,25 @@ std::vector<Key> SkipList<Key>::Scan(const Key& key, const int scan_num) {
 
 template<typename Key>
 void SkipList<Key>::Print() const {
-  std::cout << "SkipList Structure:\n";
-  for (int level = max_level - 1; level >= 0; --level) {
-    Node* node = head->next[level];
-    std::cout << "Level " << level << ": ";
-    while (node != nullptr) {
-      std::cout << node->key << " ";
-      node = node->next[level];
+
+    std::cout << "SkipList Structure:\n";
+
+    for (int level = max_level - 1; level >= 0; --level) {
+
+        Node* node = head->next[level];
+
+        std::cout << "Level " << level << ": ";
+
+        while (node != nullptr) {
+
+            std::cout << node->key << " ";
+
+            node = node->next[level];
+
+        }
+
+        std::cout << "\n";
+
     }
-    std::cout << "\n";
-  }
+
 }

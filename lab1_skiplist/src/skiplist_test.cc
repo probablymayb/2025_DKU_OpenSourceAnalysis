@@ -214,7 +214,8 @@ void Uniform_Scan(const int write, const int read, SkipList<Key> &sl) {
     float r_time, w_time;
     r_time = std::chrono::duration_cast<std::chrono::nanoseconds>(r_end - r_start).count() * 0.001;
     w_time = std::chrono::duration_cast<std::chrono::nanoseconds>(w_end - w_start).count() * 0.001;
-    printf("\n[Uniform-Scan] Insertion = %.2lf µs, Lookup = %.2lf µs\n", w_time / read, r_time / read);
+    //printf("\n[Uniform-Scan] Insertion = %.2lf µs, Lookup = %.2lf µs\n", w_time / read, r_time / read);
+    printf("\n[Uniform-Scan] Insertion = %.2lf µs, Lookup = %.2lf µs\n", w_time, r_time);
 }
 
 void printUsage(const char* programName) {
